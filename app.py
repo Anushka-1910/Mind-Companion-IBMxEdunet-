@@ -20,9 +20,11 @@ import google.generativeai as genai
 # ---------------------------------------------------------------
 # Google Gemini setup
 # ---------------------------------------------------------------
-GOOGLE_API_KEY = os.environ.get("GOOGLE_API_KEY", "PASTE_YOUR_GOOGLE_API_KEY_HERE")
+GOOGLE_API_KEY = os.environ.get("GOOGLE_API_KEY", "YOUR API KEY HERE")
 genai.configure(api_key=GOOGLE_API_KEY)
-model = genai.GenerativeModel("gemini-1.5-flash")
+model = genai.GenerativeModel("gemini-flash-latest")
+for m in genai.list_models():
+    print(m.name)
 
 # ---------------------------------------------------------------
 # Mood detection
