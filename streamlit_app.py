@@ -20,9 +20,8 @@ import google.generativeai as genai
 # ---------------------------------------------------------------
 # Google Gemini setup
 # ---------------------------------------------------------------
-GOOGLE_API_KEY = os.environ.get("GOOGLE_API_KEY", "AQ.Ab8RN6JSbDVQx-Vuu26PQOjMpVwuhpQOcM6W5-bcjiWGN9qAmg")
-genai.configure(api_key=GOOGLE_API_KEY)
-model = genai.GenerativeModel("gemini-flash-latest")
+GOOGLE_API_KEY = os.environ.get("GOOGLE_API_KEY", "AQ.Ab8RN6Kak8MRiOIFg0Ks8N-PMog1cfO5A1GrSzcM1gJcKdNEpg")
+genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
 for m in genai.list_models():
     print(m.name)
 # ---------------------------------------------------------------
