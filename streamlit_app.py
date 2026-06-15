@@ -4,11 +4,9 @@ import time
 import streamlit as st
 import google.generativeai as genai
 
-# ---------------- Gemini Setup ----------------
 genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
 model = genai.GenerativeModel("gemini-2.5-flash")
 
-# ---------------- Data ----------------
 MOOD_KEYWORDS = {
     "stressed": ["stress", "stressed", "overwhelmed", "pressure", "deadline", "exam", "exams"],
     "anxious": ["anxious", "anxiety", "nervous", "worried", "panic", "scared"],
@@ -40,7 +38,7 @@ CRISIS_MESSAGE = (
     "college counselor, or emergency support immediately."
 )
 
-# ---------------- Functions ----------------
+
 def detect_mood(text):
     text = text.lower()
     scores = {mood: 0 for mood in MOOD_KEYWORDS}
@@ -70,42 +68,54 @@ Student message: {user_message}
         return "I'm here for you. The AI reply is unavailable right now, so please check your Gemini API key setup."
 
 
-# ---------------- Page ----------------
 st.set_page_config(page_title="Mind Companion", page_icon="🌱", layout="wide")
 
-# ---------------- CSS ----------------
 st.markdown("""
 <style>
 .stApp {
     background: linear-gradient(135deg, #fff7ef 0%, #f5fbff 100%);
 }
 
-* {
-    color: #111111 !important;
-}
-
 .block-container {
     padding-top: 1rem;
+}
+
+* {
+    color: #111111 !important;
 }
 
 h1, h2, h3, h4, p, span, div {
     color: #111111 !important;
 }
 
-.main-card {
+.main-title {
+    text-align: center;
+    font-size: 48px;
+    font-weight: 900;
+    margin-bottom: 5px;
+}
+
+.subtitle {
+    text-align: center;
+    font-size: 18px;
+    color: #384152 !important;
+    margin-bottom: 30px;
+}
+
+.card {
     background: rgba(255,255,255,0.82);
-    padding: 22px;
     border-radius: 24px;
+    padding: 22px;
     box-shadow: 0 6px 18px rgba(0,0,0,0.08);
     margin-bottom: 18px;
 }
 
 .mood-card {
     border-radius: 18px;
-    padding: 15px;
+    padding: 16px;
     text-align: center;
     font-weight: 700;
-    min-height: 95px;
+    min-height: 100px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.08);
 }
 
@@ -119,39 +129,38 @@ h1, h2, h3, h4, p, span, div {
 .chat-box {
     background: white;
     border-radius: 18px;
-    padding: 14px;
-    margin-bottom: 12px;
+    padding: 16px;
+    margin-bottom: 14px;
     box-shadow: 0 3px 10px rgba(0,0,0,0.07);
-    color: #111111 !important;
 }
 
 .user-box {
     background: #fff0df;
     border-radius: 18px;
-    padding: 14px;
-    margin-bottom: 12px;
+    padding: 16px;
+    margin-bottom: 14px;
+    margin-left: 80px;
     text-align: right;
-    color: #111111 !important;
 }
 
 .journey-bar {
-    border-radius: 25px;
+    border-radius: 28px;
     text-align: center;
     font-size: 28px;
-    padding-top: 60px;
+    padding-top: 70px;
 }
 
 .session-card {
     background: #ffc400;
     border-radius: 24px;
-    padding: 20px;
+    padding: 22px;
     margin-top: 18px;
 }
 
 .tool-card {
     background: white;
     border-radius: 18px;
-    padding: 15px;
+    padding: 16px;
     box-shadow: 0 3px 10px rgba(0,0,0,0.07);
     margin-bottom: 12px;
 }
@@ -181,7 +190,6 @@ textarea, input {
 </style>
 """, unsafe_allow_html=True)
 
-# ---------------- Session State ----------------
 if "messages" not in st.session_state:
     st.session_state.messages = [
         {"role": "assistant", "content": "Hi 👋 I'm your Mind Companion. How are you feeling today?"}
@@ -196,58 +204,60 @@ if "selected_mood" not in st.session_state:
 if "game_score" not in st.session_state:
     st.session_state.game_score = 0
 
-# ---------------- Header ----------------
-st.title("🌱 Mind Companion")
-st.write("A calming chatbot with mood tracking, relaxation tools, and a mini game.")
+st.markdown("<div class='main-title'>🌱 Mind Companion</div>", unsafe_allow_html=True)
+st.markdown(
+    "<div class='subtitle'>A calming chatbot with mood tracking, relaxation tools, and a mini game.</div>",
+    unsafe_allow_html=True
+)
 
-# ---------------- Layout without big white blocks ----------------
-left, center, right = st.columns([1, 1.4, 1])
+left, center, right = st.columns([1, 1.25, 1])
 
-# ---------------- Left Section ----------------
 with left:
-    st.markdown("<div class='main-card'>", unsafe_allow_html=True)
-    st.subheader("👋 Welcome back")
-    st.markdown("## Hi, Student 😊")
-    st.write("What's on your mind right now?")
-    st.markdown("</div>", unsafe_allow_html=True)
+    st.markdown("""
+    <div class='card'>
+        <h3>👋 Welcome back</h3>
+        <h1>Hi, Student 😊</h1>
+        <h3>What’s on <span style='color:#ff5722 !important;'>your mind</span> right now?</h3>
+    </div>
+    """, unsafe_allow_html=True)
 
     st.subheader("Daily Mood Log")
 
-    m1, m2, m3 = st.columns(3)
+    c1, c2, c3 = st.columns(3)
 
-    with m1:
+    with c1:
         if st.button("😰 Low", use_container_width=True):
             st.session_state.selected_mood = "Low Energy 😰"
             st.session_state.current_mood = "tired"
         st.markdown("<div class='mood-card orange'>😰<br>Low Energy</div>", unsafe_allow_html=True)
 
-    with m2:
+    with c2:
         if st.button("🙂 Calm", use_container_width=True):
             st.session_state.selected_mood = "Calm 🙂"
             st.session_state.current_mood = "neutral"
         st.markdown("<div class='mood-card blue'>🙂<br>Calm</div>", unsafe_allow_html=True)
 
-    with m3:
+    with c3:
         if st.button("😊 Content", use_container_width=True):
             st.session_state.selected_mood = "Content 😊"
             st.session_state.current_mood = "happy"
         st.markdown("<div class='mood-card yellow'>😊<br>Content</div>", unsafe_allow_html=True)
 
-    m4, m5, m6 = st.columns(3)
+    c4, c5, c6 = st.columns(3)
 
-    with m4:
+    with c4:
         if st.button("😍 Cheerful", use_container_width=True):
             st.session_state.selected_mood = "Cheerful 😍"
             st.session_state.current_mood = "happy"
         st.markdown("<div class='mood-card green'>😍<br>Cheerful</div>", unsafe_allow_html=True)
 
-    with m5:
+    with c5:
         if st.button("😴 Tired", use_container_width=True):
             st.session_state.selected_mood = "Tired 😴"
             st.session_state.current_mood = "tired"
         st.markdown("<div class='mood-card purple'>😴<br>Tired</div>", unsafe_allow_html=True)
 
-    with m6:
+    with c6:
         if st.button("🥺 Anxious", use_container_width=True):
             st.session_state.selected_mood = "Anxious 🥺"
             st.session_state.current_mood = "anxious"
@@ -263,15 +273,10 @@ with left:
     with r2:
         st.markdown("<div class='mood-card blue'>Emotional<br>Toolkit<br><br>🧘</div>", unsafe_allow_html=True)
 
-# ---------------- Center Chat Section ----------------
 with center:
     st.subheader("💬 Chat")
     st.write("Talk, share, and feel better.")
-
-    st.markdown(
-        f"<div class='main-card'><h2>Today's Mood: {st.session_state.selected_mood}</h2></div>",
-        unsafe_allow_html=True
-    )
+    st.subheader(f"Today's Mood: {st.session_state.selected_mood}")
 
     for msg in st.session_state.messages:
         if msg["role"] == "user":
@@ -295,8 +300,8 @@ with center:
 
         st.rerun()
 
-# ---------------- Right Section ----------------
 with right:
+    st.markdown("<div class='card'>", unsafe_allow_html=True)
     st.subheader("📈 Mood Journey")
 
     days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
@@ -314,6 +319,8 @@ with right:
             )
             st.caption(days[i])
 
+    st.markdown("</div>", unsafe_allow_html=True)
+
     st.markdown("""
     <div class='session-card'>
         <h3>📅 Next Session</h3>
@@ -325,24 +332,31 @@ with right:
 
     st.subheader("🧰 Quick Tools")
 
-    if st.button("🌬️ Breathing Exercise", use_container_width=True):
-        placeholder = st.empty()
-        phases = [("Breathe In", 4), ("Hold", 3), ("Breathe Out", 4)]
+    q1, q2 = st.columns(2)
 
-        for phase, duration in phases:
-            for sec in range(duration, 0, -1):
-                placeholder.markdown(f"## {phase}... {sec}")
-                time.sleep(1)
+    with q1:
+        if st.button("🌬️ Breathing", use_container_width=True):
+            placeholder = st.empty()
+            phases = [("Breathe In", 4), ("Hold", 3), ("Breathe Out", 4)]
 
-        placeholder.success("Great job 🌿")
+            for phase, duration in phases:
+                for sec in range(duration, 0, -1):
+                    placeholder.markdown(f"## {phase}... {sec}")
+                    time.sleep(1)
 
-    if st.button("✨ Get a Quote", use_container_width=True):
-        st.markdown(f"<div class='tool-card'>✨ {random.choice(QUOTES)}</div>", unsafe_allow_html=True)
+            placeholder.success("Great job 🌿")
 
-    if st.button("🌿 Relaxation Tip", use_container_width=True):
-        mood = st.session_state.current_mood
-        tip = random.choice(RELAXATION_TIPS.get(mood, RELAXATION_TIPS["neutral"]))
-        st.markdown(f"<div class='tool-card'>🌿 {tip}</div>", unsafe_allow_html=True)
+        if st.button("🌿 Tip", use_container_width=True):
+            mood = st.session_state.current_mood
+            tip = random.choice(RELAXATION_TIPS.get(mood, RELAXATION_TIPS["neutral"]))
+            st.markdown(f"<div class='tool-card'>🌿 {tip}</div>", unsafe_allow_html=True)
+
+    with q2:
+        if st.button("✨ Quote", use_container_width=True):
+            st.markdown(f"<div class='tool-card'>✨ {random.choice(QUOTES)}</div>", unsafe_allow_html=True)
+
+        if st.button("🎮 Game", use_container_width=True):
+            st.info("Play the mini game below!")
 
     st.subheader("🎮 Mini Game")
     st.markdown(f"<div class='tool-card'>Score: {st.session_state.game_score}</div>", unsafe_allow_html=True)
@@ -368,7 +382,6 @@ with right:
     if st.button("🆘 Support Resources", use_container_width=True):
         st.error(CRISIS_MESSAGE)
 
-# ---------------- Footer ----------------
 st.markdown("---")
 st.caption(
     "⚠️ This chatbot is not a substitute for professional help. "
